@@ -74,7 +74,6 @@ CmdUtils.CreateCommand({
   },
   execute: function( bookmark ) {
 	var url = bookmark.text.match(/\((http:\/\/.*)\)$/);
-	displayMessage(url[1]);
 	if(url) {
 		Utils.openUrlInBrowser(url[1]);
 	}
