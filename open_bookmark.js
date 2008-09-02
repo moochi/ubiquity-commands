@@ -69,12 +69,11 @@ CmdUtils.CreateCommand({
 		pblock.innerHTML = bookmark.text;
 	}
 	else {
-		pblock.innerHTML = 'test';
+		pblock.innerHTML = 'search bookmark';
 	}
   },
   execute: function( bookmark ) {
 	var url = bookmark.text.match(/\((http:\/\/.*)\)$/);
-	displayMessage(url[1]);
 	if(url) {
 		Utils.openUrlInBrowser(url[1]);
 	}
