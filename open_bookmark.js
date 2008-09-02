@@ -58,8 +58,8 @@ var noun_type_bookmarks = {
 
 CmdUtils.CreateCommand({
   name: "open-bookmark",
-  homepage: "",
-  author: { name: "moochi", email: ""},
+  homepage: "http://d.hatena.ne.jp/voogie01/",
+  author: { name: "moochi", email: "moochi@voogie01.sakura.ne.jp"},
   license: "",
   description: "Open local bookmark new tab.",
   help: "Open local bookmark new tab.",
@@ -74,10 +74,9 @@ CmdUtils.CreateCommand({
   },
   execute: function( bookmark ) {
 	var url = bookmark.text.match(/\((http:\/\/.*)\)$/);
+	displayMessage(url[1]);
 	if(url) {
 		Utils.openUrlInBrowser(url[1]);
 	}
   }
 })
-
-
