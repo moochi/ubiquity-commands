@@ -1,13 +1,7 @@
-CmdUtils.CreateCommand({
-  name: "open-bookmark",
-  homepage: "",
-  author: { name: "moochi", email: ""},
-  license: "",
-  description: "Open local bookmark new tab.",
-  help: "Open local bookmark new tab.",
-  takes: {search_text: noun_arb_text},
-  modifiers: {row: noun_arb_text},
-  _search_url: function(url,rows) {
+var noun_type_bookmarks = {
+	_name: 'bookmark',
+	getBookmarks: function(text) {
+		var result = [];
  		var bmsvc = Components.classes["@mozilla.org/browser/nav-bookmarks-service;1"].getService(Components.interfaces.nsINavBookmarksService);
 		var bookmarksMenuFolder = bmsvc.bookmarksMenuFolder;
 
@@ -15,65 +9,76 @@ CmdUtils.CreateCommand({
 		var options = historyService.getNewQueryOptions();
 		var query = historyService.getNewQuery();
 		query.setFolders([bookmarksMenuFolder], 1);
-		query.searchTerms = url;
-		options.maxResults = rows;
+		query.searchTerms = text;
+		options.maxResults = 10;
 		options.sortingMode = options.SORT_BY_VISITCOUNT_DESCENDING;
 		options.resultType = options.RESULTS_AS_URI;
 		options.queryType = options.QUERY_TYPE_BOOKMARKS;
-		return historyService.executeQuery(query, options);
-  },
-  preview: function( pblock, search_text, modifiers ) {
-	var result = '';
-	var searchText = jQuery.trim(search_text.text);
-    if(searchText.length > 0) {
-		var row_no = 0;
-		if(modifiers.row && modifiers.row.text) {
-			row_no = modifiers.row.text;
-		}
-		var list = this._search_url(searchText,0);
+		var list = historyService.executeQuery(query, options);
 		var rootNode = list.root;
 		rootNode.containerOpen = true;
 		for (var i = 0; i < rootNode.childCount; i ++) {
 			var node = rootNode.getChild(i);
-			var previewdata = {
-				cnt: i,
+			var param = {
 				title: node.title,
-				url: node.uri,
+				url: node.uri
 			};
-			var previewtemplate = "${cnt}:${title}(${url})";
-			if(row_no == i) {
-				previewtemplate = '<b>' + previewtemplate + '</b>';
-			}
-			previewtemplate = previewtemplate + '<br />';
-			result = result + CmdUtils.renderTemplate(previewtemplate,previewdata);
+			result.push(param);
 		}
 		rootNode.containerOpen = false;
 
-		pblock.innerHTML = result;
+		return result;
+	},
+	suggest: function( text,html) {
+		var suggestions  = [];
+		if (typeof text != "string") {
+		  // Input undefined or not a string
+		  return [];
+		}
+		if(text == '') {
+			suggestions.push( CmdUtils.makeSugg('no match') );
+		  return suggestions;
+		}
+
+		text = jQuery.trim(text);
+		var list = noun_type_bookmarks.getBookmarks(text);
+		if(list.length) {
+			for(i = 0; i < list.length; i++) {
+				var item = list[i];
+				var template = '${title}(${url})';
+				suggestions.push(CmdUtils.makeSugg(CmdUtils.renderTemplate(template,item)));
+			}
+		}
+		else {
+			suggestions.push( CmdUtils.makeSugg('no match') );
+		}
+		return suggestions;
+	}
+}
+
+CmdUtils.CreateCommand({
+  name: "open-bookmark",
+  homepage: "",
+  author: { name: "moochi", email: ""},
+  license: "",
+  description: "Open local bookmark new tab.",
+  help: "Open local bookmark new tab.",
+  takes: {bookmark: noun_type_bookmarks},
+  preview: function( pblock, bookmark ) {
+	if(bookmark.text) {
+		pblock.innerHTML = bookmark.text;
 	}
 	else {
-		pblock.innerHTML = result;
+		pblock.innerHTML = 'test';
 	}
   },
-  execute: function( search_text, modifiers ) {
-	var searchText = jQuery.trim(search_text.text);
-    if(searchText.length > 0) {
-		var row_no = 1;
-		if(modifiers.row && modifiers.row.text) {
-			row_no = modifiers.row.text;
-			row_no++;
-		}
-		var url = '';
-		var list = this._search_url(searchText,row_no);
-		var rootNode = list.root;
-		rootNode.containerOpen = true;
-		for (var i = 0; i < rootNode.childCount; i ++) {
-			var node = rootNode.getChild(i);
-			url = node.uri;
-		}
-		rootNode.containerOpen = false;
-		Utils.openUrlInBrowser(url);
+  execute: function( bookmark ) {
+	var url = bookmark.text.match(/\((http:\/\/.*)\)$/);
+	displayMessage(url[1]);
+	if(url) {
+		Utils.openUrlInBrowser(url[1]);
 	}
   }
 })
+
 
