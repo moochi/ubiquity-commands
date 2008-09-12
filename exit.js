@@ -5,7 +5,6 @@ CmdUtils.CreateCommand({
   license: "",
   description: "window close",
   help: "window close",
-  takes: {command: noun_arb_text},
   preview: function( pblock, command ) {
   	pblock.innerHTML = "window close";
   },
