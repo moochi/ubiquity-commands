@@ -3,12 +3,12 @@ var noun_type_bookmarks = {
 	getBookmarks: function(text) {
 		var result = [];
  		var bmsvc = Components.classes["@mozilla.org/browser/nav-bookmarks-service;1"].getService(Components.interfaces.nsINavBookmarksService);
-		var bookmarksMenuFolder = bmsvc.bookmarksMenuFolder;
+		var placesRoot = bmsvc.placesRoot;
 
 		var historyService = Components.classes["@mozilla.org/browser/nav-history-service;1"].getService(Components.interfaces.nsINavHistoryService);
 		var options = historyService.getNewQueryOptions();
 		var query = historyService.getNewQuery();
-		query.setFolders([bookmarksMenuFolder], 1);
+		query.setFolders([placesRoot], 1);
 		query.searchTerms = text;
 		options.maxResults = 10;
 		options.sortingMode = options.SORT_BY_VISITCOUNT_DESCENDING;
