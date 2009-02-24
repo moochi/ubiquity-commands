@@ -3,12 +3,14 @@ var noun_type_bookmarks = {
 	getBookmarks: function(text) {
 		var result = [];
  		var bmsvc = Components.classes["@mozilla.org/browser/nav-bookmarks-service;1"].getService(Components.interfaces.nsINavBookmarksService);
-		var placesRoot = bmsvc.placesRoot;
+		var bookmarksMenuFolder = bmsvc.bookmarksMenuFolder;
+		var unfiledBookmarksFolder = bmsvc.unfiledBookmarksFolder;
+		var toolbarFolder = bmsvc.toolbarFolder;
 
 		var historyService = Components.classes["@mozilla.org/browser/nav-history-service;1"].getService(Components.interfaces.nsINavHistoryService);
 		var options = historyService.getNewQueryOptions();
 		var query = historyService.getNewQuery();
-		query.setFolders([placesRoot], 1);
+		query.setFolders([bookmarksMenuFolder,unfiledBookmarksFolder,toolbarFolder], 3);
 		query.searchTerms = text;
 		options.maxResults = 10;
 		options.sortingMode = options.SORT_BY_VISITCOUNT_DESCENDING;
