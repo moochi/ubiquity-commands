@@ -59,25 +59,29 @@ var noun_type_bookmarks = {
 }
 
 CmdUtils.CreateCommand({
-  name: "open-bookmark",
-  homepage: "http://d.hatena.ne.jp/voogie01/",
-  author: { name: "moochi", email: "moochi@voogie01.sakura.ne.jp"},
-  license: "",
+  names: ["open bookmark"],
+  icon: "",
   description: "Open local bookmark new tab.",
   help: "Open local bookmark new tab.",
-  takes: {bookmark: noun_type_bookmarks},
-  preview: function( pblock, bookmark ) {
-	if(bookmark.text) {
-		pblock.innerHTML = bookmark.text;
+  author: {name: "moochi", email: "moochi@voogie01.sakura.ne.jp"},
+  license: "",
+  homepage: "http://d.hatena.ne.jp/voogie01/",
+  arguments: [{role: 'object', nountype: noun_type_bookmarks}],
+  preview: function preview(pblock, bookmark) {
+	if(bookmark.object.text) {
+		pblock.innerHTML = bookmark.object.text;
 	}
 	else {
 		pblock.innerHTML = 'search bookmark';
 	}
   },
-  execute: function( bookmark ) {
-	var url = bookmark.text.match(/\((http:\/\/.*)\)$/);
+  execute: function execute(bookmark) {
+	var url = bookmark.object.text.match(/\((http:\/\/.*)\)$/);
 	if(url) {
 		Utils.openUrlInBrowser(url[1]);
 	}
   }
-})
+});
+
+
+
