@@ -1,24 +1,25 @@
 var noun_type_tour_command = new CmdUtils.NounType( "command", ['next','prev','first'] );
 
 CmdUtils.CreateCommand({
-  name: "tour",
-  homepage: "http://d.hatena.ne.jp/voogie01/",
+  names: ["tour"],
+  icon: "",
+  description: "bookmark keyword tour.",
+  help: "The tour command goes it round the bookmark. The bookmark is chosen and it is input to the keyword item of the property, 't_1'.The bookmark of 't_1' is opened by 'tour first' command. The bookmark set to the keyword, 't_2' is opened by 'tour next' command with 't_1' bookmark opened.",
   author: { name: "moochi", email: "moochi@voogie01.sakura.ne.jp"},
   license: "",
-  description: "bookmark keyword tour.",
-  help: "bookmark keywork tour.",
-  takes: {command: noun_type_tour_command},
-  preview: function( pblock, command ) {
+  homepage: "http://d.hatena.ne.jp/voogie01/",
+  arguments: [{role: 'object', nountype: noun_type_tour_command}],
+  preview: function preview(pblock, args) {
   },
-  execute: function( command ) {
+  execute: function execute(args) {
  		var bmsvc = Components.classes["@mozilla.org/browser/nav-bookmarks-service;1"].getService(Components.interfaces.nsINavBookmarksService);
 		var windowManager = Components.classes["@mozilla.org/appshell/window-mediator;1"].getService(Components.interfaces.nsIWindowMediator);
 		var browserWindow = windowManager.getMostRecentWindow("navigator:browser");
 		var browser = browserWindow.getBrowser();
-		if(command.text == 'first') {
+		if(args.object.text == 'first') {
 			var uri = bmsvc.getURIForKeyword('t_1');
 			if(uri) {
-				browserWindow.loadURI(uri.spec,null,null,false);
+				Utils.openUrlInBrowser(uri.spec);
 			}
 			else {
 				displayMessage('no t_1');
@@ -30,7 +31,7 @@ CmdUtils.CreateCommand({
 			var match = keyword.match(/t_(\d+)/);
 			if(match) {
 				var num = match[1];
-				if(command.text == 'next') {
+				if(args.object.text == 'next') {
 					num++;
 				}
 				else {
@@ -52,6 +53,5 @@ CmdUtils.CreateCommand({
 				displayMessage('not keyword');
 		}
   }
-})
-
+});
 
